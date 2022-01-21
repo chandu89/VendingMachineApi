@@ -33,6 +33,10 @@ class User < ApplicationRecord
 
   def update_coins(deposit_params)
     new_deposit = JSON.parse(deposit_params[:deposit])
+    if new_deposit.length > 1
+      return { error: 'Cannot Insert more than one coin at a time.' }
+    end
+
     user_deposited = deposit
 
     new_deposit.each_key do |key|
@@ -47,6 +51,8 @@ class User < ApplicationRecord
         user_deposited[key] = [user_deposited[key].to_i, new_deposit[key].to_i].sum
       when 'cent100'
         user_deposited[key] = [user_deposited[key].to_i, new_deposit[key].to_i].sum
+      else
+        return { error: 'Invalid denomination coin.' }
       end
     end
     { deposit: user_deposited }

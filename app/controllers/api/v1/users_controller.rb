@@ -37,7 +37,9 @@ module Api
       def deposit
         @user = User.find(params[:user_id])
         deposit_coins = @user.update_coins(deposit_params)
-        if @user.update(deposit_coins)
+        if deposit_coins[:error]
+          render json: { message: deposit_coins[:error] }
+        elsif @user.update(deposit_coins)
           render json: @user
         else
           render json: @user.errors, status: :unprocessable_entity
